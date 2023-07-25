@@ -151,7 +151,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
     private boolean isCameraViewEnabled = true;
 
     // 실시간 번호판 탐지 코드
-    private CameraBridgeViewBase m_CameraView;
+    BackgroundTask clovaTask = new BackgroundTask();
     DHDetectionModel detectionModel;
     GpuDelegate delegate = new GpuDelegate();
     public Interpreter.Options options = (new Interpreter.Options()).addDelegate(delegate);
@@ -164,7 +164,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
     public interface OCRService {
         @Headers({
                 "Content-Type: application/json; charset=utf-8",
-                "X-OCR-SECRET: "
+                "X-OCR-SECRET: QmlsQVJod3l1RlBEeWtoRmNFQnBXeHNYd2hBalVCYWQ="
         })
         @POST("general")
         Call<JsonObject> doOCR(@Body JsonObject requestBody);
@@ -237,6 +237,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
                     mOpenCvCameraView.enableView();
                 }
                 isCameraViewEnabled = !isCameraViewEnabled; // Toggle the camera view state
+                Log.e("onclick:: ", String.valueOf(isCameraViewEnabled));
             }
         });
 
@@ -345,7 +346,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-
+        Log.d("log:: ", "start");
         matInput = inputFrame.rgba();
         Mat input = matInput.clone();
 
@@ -359,10 +360,18 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         float[][] proposal = detectionModel.getProposal(onFrame, input);
         //long yolo_e = System.currentTimeMillis();
         //inferenceTime[0] = yolo_e-yolo_s;
+        //Imgproc.rectangle(matInput, new Point(0, 0), new Point(400, 300),new Scalar(0, 255, 0), 10);
+        Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+250, mOpenCvCameraView.getTop()-850), new Point(mOpenCvCameraView.getRight()-550, mOpenCvCameraView.getBottom()-1200),new Scalar(0, 255, 0), 10);
+        //Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+750, mOpenCvCameraView.getTop()+230), new Point(mOpenCvCameraView.getRight()+200, mOpenCvCameraView.getBottom()+200),new Scalar(0, 255, 0), 10);
+//        Log.d("log:: ", "before");
+//        Log.d("log:: ", "point 1 " + mOpenCvCameraView.getLeft() + " , " + mOpenCvCameraView.getTop());
+//        Log.d("log:: ", "point 2 " + mOpenCvCameraView.getRight() + " , " + mOpenCvCameraView.getBottom());
+//        if(proposal[1][4] < 0.5){ // reject inference
+//            Log.d("log:: ", "out" + proposal[1][4]);
+//            return matInput;
+//        }
+//        Log.d("log:: ", "after");
 
-        if(proposal[1][4] < 0.5){ // reject inference
-            return matInput;
-        }
 
         int w = matInput.width();
         int h = matInput.height();
@@ -394,8 +403,15 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         int new_w = (int) (pt3_x-pt1_x);
         int new_h = (int) (pt3_y-pt1_y);
 
+//        Log.d("log:: ", "left point " + (mOpenCvCameraView.getLeft()+250) + " , " + pt1_x);
+//        Log.d("log:: ", "right point " + (mOpenCvCameraView.getRight()-550) + " , " + (pt1_x + new_w));
+//        Log.d("log:: ", "top point " + (mOpenCvCameraView.getTop()-850) + " , " + pt1_y);
+//        Log.d("log:: ", "bottom point " + (mOpenCvCameraView.getBottom()-1200) + " , " + (pt1_y + new_h));
 
-        if (((pt1_x < m_CameraView.getLeft()+200) || ((pt1_x + new_w) > m_CameraView.getRight()-400)) || ((pt1_y < m_CameraView.getTop()+200) || ((pt1_y + new_h) > m_CameraView.getBottom()-200)) || (new_w < 50)) {
+        Imgproc.rectangle(matInput, new Point(pt1_x, pt1_y), new Point(pt3_x, pt3_y),
+                new Scalar(0, 0, 255), 10);
+
+        if (((pt1_x < mOpenCvCameraView.getLeft()+250) || ((pt1_x + new_w) > mOpenCvCameraView.getRight()-550)) || ((pt1_y < mOpenCvCameraView.getTop()-850) || ((pt1_y + new_h) > mOpenCvCameraView.getBottom()-1200)) || (new_w < 50)) {
             Log.d("log:: ", "Out of Bound");
         } else {
             Imgproc.rectangle(matInput, new Point(pt1_x, pt1_y), new Point(pt3_x, pt3_y),
@@ -404,8 +420,8 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
             Log.d("log:: ", "pt1_x: " + pt1_x + " pt1_y: " + pt1_y + " new_w: " + new_w + " new_h: " + new_h);
 
             Rect roi = new Rect(pt1_x, pt1_y, new_w, new_h);
-            Log.d("log:: ", "x: " + roi.x + " y: " + roi.y + " w: " + roi.width + " h: " + roi.height);
-            Log.d("input log:: ", "cols: " + input.cols() + " rows: " + input.rows());
+//            Log.d("log:: ", "x: " + roi.x + " y: " + roi.y + " w: " + roi.width + " h: " + roi.height);
+//            Log.d("input log:: ", "cols: " + input.cols() + " rows: " + input.rows());
             if (roi.x + roi.width > input.cols() || roi.x < 0 || roi.width < 0 || roi.y + roi.height > input.rows() || roi.y < 0 || roi.height < 0)
                 return matInput;
             Mat croppedImage = new Mat(input, roi);
@@ -421,28 +437,31 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
             Utils.matToBitmap(toplateImage, onFrame2);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            onFrame2.compress(Bitmap.CompressFormat.PNG, 200, baos);
+            onFrame2.compress(Bitmap.CompressFormat.PNG, 100, baos);
             byte[] bImage = baos.toByteArray();
             onFrame2_base64 = Base64.encodeToString(bImage, 0);
 
-            if (!(onFrame2_base64.equals(before_image))) {
-                carPlate_num(onFrame2_base64);
-                before_image = onFrame2_base64;
-            }
+            clovaTask.start();
+            mOpenCvCameraView.disableView();
+
+//            isCameraViewEnabled = !isCameraViewEnabled;
+//            Log.e("onclick:: ", String.valueOf(isCameraViewEnabled));
+//            mOpenCvCameraView.disableView();
 
         }
 
-
-        if ( matResult == null )
-
-            matResult = new Mat(matInput.rows(), matInput.cols(), matInput.type());
-
-//        ConvertRGBtoGray(matInput.getNativeObjAddr(), matResult.getNativeObjAddr());
-
-        return matResult;
+        return matInput;
     }
 
+
+
     private void carPlate_num (String onFrame2_base64) {
+        if (!(onFrame2_base64.equals(before_image))) {
+            cFlag = true;
+            before_image = onFrame2_base64;
+        } else {
+            cFlag = false;
+        }
         if (cFlag) {
             JsonObject requestBody = new JsonObject();
             requestBody.addProperty("version", "V2");
@@ -464,11 +483,13 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
             cFlag = false;
             Log.e("json 파일", String.valueOf(cFlag));
         } else {
-            call.enqueue(new Callback<JsonObject>() {
+            Log.e("json 파일", String.valueOf(cFlag)+1);
+            call.clone().enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     String strs="";
                     if (response.isSuccessful()) {
+                        Log.e("json 파일", String.valueOf(cFlag)+2);
                         JsonObject result = response.body();
                         //Log.e("json 파일", String.valueOf(result));
                         JsonArray imagesArr = result.getAsJsonArray("images");
@@ -477,11 +498,27 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
                         //Log.e("json 파일", String.valueOf(firstImageObj));
                         JsonArray fieldsArr = firstImageObj.getAsJsonArray("fields");
                         //Log.e("json 파일", String.valueOf(fieldsArr));
+                        String front = "", middle = "", back = "", tmp = "";
                         for (int i=0; i<fieldsArr.size(); i++){
                             JsonObject job = (JsonObject) fieldsArr.get(i);
+                            tmp = String.valueOf(job.get("inferText"));
+                            if(tmp.length() == 2 || tmp.length() == 3) front = tmp;
+                            else if (tmp.length() == 1) middle = tmp;
+                            else if (tmp.length() == 4) back = tmp;
+                            else {
+                                strs = strs + tmp;
+                            }
                             //Log.e("json 파일", String.valueOf(job));
-                            strs = strs + job.get("inferText");
+//                            strs = strs + job.get("inferText");
                             //.e("json 파일", String.valueOf(job.get("inferText")));
+                        }
+
+                        if (strs.length() == 0) {
+                            strs = front + middle + back;
+                        } else {
+                            if (front.length() != 0) strs = front + strs;
+                            if (middle.length() != 0) strs = strs + middle;
+                            if (back.length() != 0) strs = strs + back;
                         }
                         //Log.e("json 파일", strs);
 
@@ -491,12 +528,15 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
                         //Toast.makeText(getApplicationContext(), strs, Toast.LENGTH_LONG).show();
                         //Toast.makeText(getApplicationContext(), carPlate_num, Toast.LENGTH_LONG).show();
                         Log.e("텍스트 인식", "성공");
+                        cFlag = true;
+                        clovaTask.stopThread();
+
 
                     } else {
                         Log.e("텍스트 인식", "실패");
+                        cFlag = false;
                     }
-                    cFlag = true;
-                    Log.e("json 파일", String.valueOf(cFlag));
+                    Log.e("json 파일", String.valueOf(cFlag)+3);
                 }
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
@@ -755,15 +795,25 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
             case R.id.gps:
                 keyBoardHidden();
                 getGps();
+//                lat.setText("128");
+//                lng.setText("35");
+//                gpsFlag = true;
                 break;
             case R.id.register:
                 getGps();
 
                 if (GetInputCheck()) {
+//                    Log.e("자료", "실행1");
                     loading.setVisibility(VISIBLE);
+//                    Log.e("자료", "실행2");
                     getInfo = new GetInfo("REGISTER");
+//                    Log.e("자료", "실행3");
                     getInfo.execute();
+//                    Log.e("자료", "실행4");
+//                    mOpenCvCameraView.enableView();
+//                    Log.e("자료", "실행5");
                 }
+//                Log.e("자료", "실행6");
                 break;
             case R.id.btnMap:
                 Intent intent = new Intent(this, SurveyMap.class);
@@ -786,6 +836,32 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
 
         return super.onKeyUp(keyCode, event);
     }
+
+    // 백그라운드 스레드 실행을 위한 클래스 정의
+    class BackgroundTask extends Thread {
+        private volatile boolean isRunning = true;
+
+        @Override
+        public void run() {
+            while (isRunning) {
+                // 지속적으로 실행할 함수 호출
+                carPlate_num(onFrame2_base64);
+
+                // 일시적인 딜레이 (1초로 설정)
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // 스레드를 중지하는 메소드
+        public void stopThread() {
+            isRunning = false;
+        }
+    }
+
 
     private class GetInfo extends AsyncTask<String, Integer, String> {
 
@@ -1003,7 +1079,6 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
                 }
 
             } else {        // who == INFO
-
                 modelName.setText(modelList.get(0));
                 legalName.setText(legalList.get(0));
             }

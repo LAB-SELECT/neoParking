@@ -281,20 +281,29 @@
                         android:background="@drawable/register_btn"/>
                 </LinearLayout>
 
-                <LinearLayout
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="250dp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <org.opencv.android.JavaCameraView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="230dp"-->
+<!--                        opencv:camera_id="any"-->
+<!--                        android:visibility="gone"-->
+<!--                        android:id="@+id/activity_surface_view" />-->
+
+<!--                </LinearLayout>-->
+
+                <org.opencv.android.JavaCameraView
+                    android:id="@+id/activity_surface_view"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <org.opencv.android.JavaCameraView
-                        android:layout_width="match_parent"
-                        android:layout_height="230dp"
-                        opencv:camera_id="any"
-                        android:visibility="gone"
-                        android:id="@+id/activity_surface_view" />
-
-                </LinearLayout>
+                    android:layout_height="230dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="4dp"
+                    android:visibility="visible"
+                    opencv:camera_id="any" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
