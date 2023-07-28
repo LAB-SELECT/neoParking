@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -63,6 +64,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 import org.tensorflow.lite.Interpreter;
@@ -145,7 +147,9 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
     private Button btnOpen = null;
 
     private Mat matInput;
-    private Mat matResult;
+    private Mat matCrop;
+    private Mat matInput_dst;
+//    private Mat matResult;
     private CameraBridgeViewBase mOpenCvCameraView;
 
     private boolean isCameraViewEnabled = true;
@@ -347,12 +351,29 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Log.d("log:: ", "start");
+//        matInput_src = inputFrame.rgba();
+//        matInput = new Mat();
+//        Mat mapMatrix = Imgproc.getRotationMatrix2D(new Point((mOpenCvCameraView.getRight()-mOpenCvCameraView.getLeft())/2, ((mOpenCvCameraView.getBottom()-mOpenCvCameraView.getTop())/2)), 90, 1.0);
+//        Imgproc.warpAffine(matInput_src, matInput, mapMatrix, new Size(341, 604));
         matInput = inputFrame.rgba();
-        Mat input = matInput.clone();
+        Rect crop = new Rect(200, 0, 400, 400);
+        matInput = inputFrame.rgba();
+        matCrop = new Mat(matInput, crop);
+        matInput_dst = new Mat();
+        Mat mapMatrix = Imgproc.getRotationMatrix2D(new Point(200, 150), 90, 1.0);
+        Imgproc.warpAffine(matCrop, matInput_dst, mapMatrix, new Size(400, 400));
+//        Size sz0 = new Size(130, 230);
+//        Imgproc.resize(matInput_src, matInput, sz0);
+        Mat input = matInput_dst.clone();
+        File fileFile = getFilesDir();
+        String getFile = fileFile.getPath()+"test2.jpg";
+        Log.d("datapath:: ", getFile);
+        Imgcodecs.imwrite(getFile, input);
+
 
         Mat toDetImage = new Mat();
         Size sz = new Size(256, 192);
-        Imgproc.resize(matInput, toDetImage, sz);
+        Imgproc.resize(matInput_dst, toDetImage, sz);
         onFrame = Bitmap.createBitmap(toDetImage.cols(), toDetImage.rows(), Bitmap.Config.ARGB_8888);
 
         Utils.matToBitmap(toDetImage, onFrame);
@@ -360,16 +381,16 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         float[][] proposal = detectionModel.getProposal(onFrame, input);
         //long yolo_e = System.currentTimeMillis();
         //inferenceTime[0] = yolo_e-yolo_s;
-        //Imgproc.rectangle(matInput, new Point(0, 0), new Point(400, 300),new Scalar(0, 255, 0), 10);
-        Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+250, mOpenCvCameraView.getTop()-850), new Point(mOpenCvCameraView.getRight()-550, mOpenCvCameraView.getBottom()-1200),new Scalar(0, 255, 0), 10);
-        //Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+750, mOpenCvCameraView.getTop()+230), new Point(mOpenCvCameraView.getRight()+200, mOpenCvCameraView.getBottom()+200),new Scalar(0, 255, 0), 10);
+//        Imgproc.rectangle(matInput, new Point(200, 0), new Point(600, 500),new Scalar(0, 255, 0), 10);
+//        Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+250, mOpenCvCameraView.getTop()-850), new Point(mOpenCvCameraView.getRight()-550, mOpenCvCameraView.getBottom()-1200),new Scalar(0, 255, 0), 10);
+//        Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+750, mOpenCvCameraView.getTop()+230), new Point(mOpenCvCameraView.getRight()+200, mOpenCvCameraView.getBottom()+200),new Scalar(0, 255, 0), 10);
 //        Log.d("log:: ", "before");
 //        Log.d("log:: ", "point 1 " + mOpenCvCameraView.getLeft() + " , " + mOpenCvCameraView.getTop());
 //        Log.d("log:: ", "point 2 " + mOpenCvCameraView.getRight() + " , " + mOpenCvCameraView.getBottom());
-//        if(proposal[1][4] < 0.5){ // reject inference
-//            Log.d("log:: ", "out" + proposal[1][4]);
-//            return matInput;
-//        }
+        if(proposal[1][4] < 0.5){ // reject inference
+            Log.d("log:: ", "out" + proposal[1][4]);
+            return matInput;
+        }
 //        Log.d("log:: ", "after");
 
 
@@ -411,7 +432,8 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         Imgproc.rectangle(matInput, new Point(pt1_x, pt1_y), new Point(pt3_x, pt3_y),
                 new Scalar(0, 0, 255), 10);
 
-        if (((pt1_x < mOpenCvCameraView.getLeft()+250) || ((pt1_x + new_w) > mOpenCvCameraView.getRight()-550)) || ((pt1_y < mOpenCvCameraView.getTop()-850) || ((pt1_y + new_h) > mOpenCvCameraView.getBottom()-1200)) || (new_w < 50)) {
+        if(true) {
+//        if (((pt1_x < mOpenCvCameraView.getLeft()+250) || ((pt1_x + new_w) > mOpenCvCameraView.getRight()-550)) || ((pt1_y < mOpenCvCameraView.getTop()-850) || ((pt1_y + new_h) > mOpenCvCameraView.getBottom()-1200)) || (new_w < 50)) {
             Log.d("log:: ", "Out of Bound");
         } else {
             Imgproc.rectangle(matInput, new Point(pt1_x, pt1_y), new Point(pt3_x, pt3_y),
@@ -442,7 +464,9 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
             onFrame2_base64 = Base64.encodeToString(bImage, 0);
 
             clovaTask.start();
+            Log.e("camera ", "before");
             mOpenCvCameraView.disableView();
+            Log.e("camera ", "after");
 
 //            isCameraViewEnabled = !isCameraViewEnabled;
 //            Log.e("onclick:: ", String.valueOf(isCameraViewEnabled));
@@ -534,7 +558,8 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
 
                     } else {
                         Log.e("텍스트 인식", "실패");
-                        cFlag = false;
+                        cFlag = true;
+                        clovaTask.stopThread();
                     }
                     Log.e("json 파일", String.valueOf(cFlag)+3);
                 }

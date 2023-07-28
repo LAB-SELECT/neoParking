@@ -479,16 +479,16 @@ public class Imgproc {
 
     // C++: enum InterpolationFlags (cv.InterpolationFlags)
     public static final int
-            INTER_NEAREST = 0,
-            INTER_LINEAR = 1,
-            INTER_CUBIC = 2,
-            INTER_AREA = 3,
-            INTER_LANCZOS4 = 4,
-            INTER_LINEAR_EXACT = 5,
-            INTER_NEAREST_EXACT = 6,
-            INTER_MAX = 7,
-            WARP_FILL_OUTLIERS = 8,
-            WARP_INVERSE_MAP = 16;
+            INTER_NEAREST = 0;
+    public static final int INTER_LINEAR = 1;
+    public static final int INTER_CUBIC = 2;
+    public static final int INTER_AREA = 3;
+    public static final int INTER_LANCZOS4 = 4;
+    public static final int INTER_LINEAR_EXACT = 5;
+    public static final int INTER_NEAREST_EXACT = 6;
+    public static final int INTER_MAX = 7;
+    public static final int WARP_FILL_OUTLIERS = 8;
+    public static final int WARP_INVERSE_MAP = 16;
 
 
     // C++: enum InterpolationMasks (cv.InterpolationMasks)

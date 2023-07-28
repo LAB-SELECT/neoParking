@@ -20,7 +20,8 @@
         android:label="주차이용실태조사_카메라TEST용"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:theme="@style/Theme.AppCompat.NoActionBar"
+        >
 
         <meta-data
             android:name = "com.kakao.sdk.AppKey"
@@ -34,22 +35,22 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="parkingsurvey.neotsys.com.InputActivity"
-            android:Orientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
-<!--        <activity android:name="parkingsurvey.neotsys.com.InputActivity"-->
+<!--        <activity-->
+<!--            android:name="parkingsurvey.neotsys.com.InputActivity"-->
+<!--            android:Orientation="portrait"-->
 <!--            android:windowSoftInputMode="stateAlwaysHidden"-->
-<!--            android:theme="@style/Theme.AppCompat.NoActionBar"-->
-<!--            android:configChanges="keyboardHidden|orientation">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN"/>-->
+<!--            android:theme="@style/Theme.AppCompat.NoActionBar" />-->
 
-<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
+        <activity android:name="parkingsurvey.neotsys.com.InputActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:configChanges="keyboardHidden|orientation">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
 
         <activity
             android:name="parkingsurvey.neotsys.com.SurveyMap"

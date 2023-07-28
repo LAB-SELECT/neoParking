@@ -232,8 +232,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        protected void onPostExecute(String s) {super.onPostExecute(s);
 
             if (s != null) {
                 Intent InputActivity = new Intent(MainActivity.this, InputActivity.class);
