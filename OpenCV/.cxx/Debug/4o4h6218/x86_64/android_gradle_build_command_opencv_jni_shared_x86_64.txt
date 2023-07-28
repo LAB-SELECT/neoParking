@@ -1,0 +1,7 @@
+Executable : C:\Users\User\AppData\Local\Android\Sdk\cmake\3.18.1\bin\ninja.exe
+arguments : 
+-C
+C:\Users\User\AndroidStudioProjects\neoParking-main\OpenCV\.cxx\Debug\4o4h6218\x86_64
+opencv_jni_shared
+jvmArgs : 
+
