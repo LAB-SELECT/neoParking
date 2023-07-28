@@ -171,7 +171,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
     public interface OCRService {
         @Headers({
                 "Content-Type: application/json; charset=utf-8",
-                "X-OCR-SECRET: TVhpZEFOc1RNcmxWVUtQa3ZCQnpPeUtLQWNwalR0WXI="
+                "X-OCR-SECRET: "
         })
         @POST("general")
         Call<JsonObject> doOCR(@Body JsonObject requestBody);
@@ -522,6 +522,13 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
                         String carPlate_num = strs.replaceAll("[^ㄱ-ㅎㅏ-ㅣ가-힣0-9]", "");
                         // 탐지한 번호판 입력
                         carNumber.setText(carPlate_num);
+//                        getGps();
+//                        if (GetInputCheck()) {
+//                            loading.setVisibility(VISIBLE);
+//                            getInfo = new GetInfo("REGISTER");
+//                            getInfo.execute();
+//                            sound.play(soundId, 1f, 1f, 0, 0, 1f);
+//                        }
                         Log.e("텍스트 인식", "성공");
                         cFlag = true;
                         clovaTask.stopClovaThread();
