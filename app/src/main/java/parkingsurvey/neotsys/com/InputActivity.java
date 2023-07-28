@@ -13,6 +13,8 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -143,6 +145,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
 
     private View btnOpenView = null;
     private Button btnOpen = null;
+    private Button btnPlate = null;
 
     private Mat matInput;
     private Mat matResult;
@@ -160,6 +163,10 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
     String onFrame2_base64;
     String before_image = "";
     boolean cFlag=true;
+    boolean clovaFlag = false;
+
+    SoundPool sound;
+    int soundId;
     Call<JsonObject> call;
     public interface OCRService {
         @Headers({
@@ -285,10 +292,20 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         btnOpen = (Button) btnOpenView.findViewById(R.id.btnMap);
         btnOpen.setOnClickListener(this);
 
+        btnPlate = (Button) findViewById(R.id.btnPlate);
+        btnPlate.setOnClickListener(this);
+
         loading = (ProgressBar) findViewById(R.id.loading);
 
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
+        clovaTask.start();
+        clovaTask.stopClovaThread();
+        clovaTask.stopPlateThread();
+
+        sound = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+        soundId = sound.load(this, R.raw.sound, 1);
 
         Log.e(TAG, "onCreate -----");
         getInfo = new GetInfo("INFO");
@@ -348,6 +365,18 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Log.d("log:: ", "start");
         matInput = inputFrame.rgba();
+
+        if (clovaFlag) {
+            return matInput;
+        } else {
+            Imgproc.rectangle(matInput, new Point(100, 200), new Point(800, 500), new Scalar(0, 255, 0), 10);
+            clovaTask.restartPlateThread();
+            return matInput;
+        }
+
+    }
+
+    private void carPlate () {
         Mat input = matInput.clone();
 
         Mat toDetImage = new Mat();
@@ -356,39 +385,29 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         onFrame = Bitmap.createBitmap(toDetImage.cols(), toDetImage.rows(), Bitmap.Config.ARGB_8888);
 
         Utils.matToBitmap(toDetImage, onFrame);
-        //long yolo_s = System.currentTimeMillis();     // 모델 추론 시간 확인을 위한 코드
         float[][] proposal = detectionModel.getProposal(onFrame, input);
-        //long yolo_e = System.currentTimeMillis();
-        //inferenceTime[0] = yolo_e-yolo_s;
-        Imgproc.rectangle(matInput, new Point(100, 200), new Point(800, 500),new Scalar(0, 255, 0), 10);
-        //Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+250, mOpenCvCameraView.getTop()-850), new Point(mOpenCvCameraView.getRight()-550, mOpenCvCameraView.getBottom()-1200),new Scalar(0, 255, 0), 10);
-        //Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+750, mOpenCvCameraView.getTop()+230), new Point(mOpenCvCameraView.getRight()+200, mOpenCvCameraView.getBottom()+200),new Scalar(0, 255, 0), 10);
-//        Log.d("log:: ", "before");
-//        Log.d("log:: ", "point 1 " + mOpenCvCameraView.getLeft() + " , " + mOpenCvCameraView.getTop());
-//        Log.d("log:: ", "point 2 " + mOpenCvCameraView.getRight() + " , " + mOpenCvCameraView.getBottom());
-//        if(proposal[1][4] < 0.5){ // reject inference
-//            Log.d("log:: ", "out" + proposal[1][4]);
-//            return matInput;
-//        }
-//        Log.d("log:: ", "after");
+        if (proposal[1][4] < 0.5) { // reject inference
+            Log.d("log:: ", "out" + proposal[1][4]);
+            return;
+        }
 
 
         int w = matInput.width();
         int h = matInput.height();
         float[] coord = new float[8];
-        float x_center= proposal[1][0];
+        float x_center = proposal[1][0];
         float y_center = proposal[1][1];
         float width = proposal[1][2];
         float height = proposal[1][3];
 
-        coord[0]= (float) (x_center-0.5*width);
-        coord[1]= (float) (y_center-0.5*height);
-        coord[2]= (float) (x_center+0.5*width);
-        coord[3]= (float) (y_center-0.5*height);
-        coord[4]= (float) (x_center+0.5*width);
-        coord[5]= (float) (y_center+0.5*height);
-        coord[6]= (float) (x_center-0.5*width);
-        coord[7]= (float) (y_center+0.5*height);
+        coord[0] = (float) (x_center - 0.5 * width);
+        coord[1] = (float) (y_center - 0.5 * height);
+        coord[2] = (float) (x_center + 0.5 * width);
+        coord[3] = (float) (y_center - 0.5 * height);
+        coord[4] = (float) (x_center + 0.5 * width);
+        coord[5] = (float) (y_center + 0.5 * height);
+        coord[6] = (float) (x_center - 0.5 * width);
+        coord[7] = (float) (y_center + 0.5 * height);
 
         int w_ = (int) (0.01 * w);
         int h_ = (int) (0.01 * h);
@@ -400,13 +419,9 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         int pt3_x = (int) ((w * coord[4] + w_) < w ? (w * coord[4] + w_) : (w * coord[4]));
         int pt3_y = (int) ((h * coord[5] + h_) < h ? (h * coord[5] + h_) : (h * coord[5]));
 
-        int new_w = (int) (pt3_x-pt1_x);
-        int new_h = (int) (pt3_y-pt1_y);
+        int new_w = (int) (pt3_x - pt1_x);
+        int new_h = (int) (pt3_y - pt1_y);
 
-//        Log.d("log:: ", "left point " + (mOpenCvCameraView.getLeft()+250) + " , " + pt1_x);
-//        Log.d("log:: ", "right point " + (mOpenCvCameraView.getRight()-550) + " , " + (pt1_x + new_w));
-//        Log.d("log:: ", "top point " + (mOpenCvCameraView.getTop()-850) + " , " + pt1_y);
-//        Log.d("log:: ", "bottom point " + (mOpenCvCameraView.getBottom()-1200) + " , " + (pt1_y + new_h));
 
         Imgproc.rectangle(matInput, new Point(pt1_x, pt1_y), new Point(pt3_x, pt3_y),
                 new Scalar(0, 0, 255), 10);
@@ -421,18 +436,14 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
             Log.d("log:: ", "pt1_x: " + pt1_x + " pt1_y: " + pt1_y + " new_w: " + new_w + " new_h: " + new_h);
 
             Rect roi = new Rect(pt1_x, pt1_y, new_w, new_h);
-//            Log.d("log:: ", "x: " + roi.x + " y: " + roi.y + " w: " + roi.width + " h: " + roi.height);
-//            Log.d("input log:: ", "cols: " + input.cols() + " rows: " + input.rows());
-            if (roi.x + roi.width > input.cols() || roi.x < 0 || roi.width < 0 || roi.y + roi.height > input.rows() || roi.y < 0 || roi.height < 0)
-                return matInput;
+            //            Log.d("log:: ", "x: " + roi.x + " y: " + roi.y + " w: " + roi.width + " h: " + roi.height);
+            //            Log.d("input log:: ", "cols: " + input.cols() + " rows: " + input.rows());
+            if (roi.x + roi.width > input.cols() || roi.x < 0 || roi.width < 0 || roi.y + roi.height > input.rows() || roi.y < 0 || roi.height < 0) {
+                return;
+            }
             Mat croppedImage = new Mat(input, roi);
-//            Mat toDetImage2 = new Mat();
-//            Size sz2 = new Size(128, 128);
-//            Imgproc.resize(croppedImage, toDetImage2, sz2);
-//            onFrame2 = Bitmap.createBitmap(toDetImage2.cols(), toDetImage2.rows(), Bitmap.Config.ARGB_8888);
-//            Utils.matToBitmap(toDetImage2, onFrame2);
             Mat toplateImage = new Mat();
-            Size sz1 = new Size(1024, 2048);
+            Size sz1 = new Size(1920, 1080);
             Imgproc.resize(croppedImage, toplateImage, sz1);
             onFrame2 = Bitmap.createBitmap(toplateImage.cols(), toplateImage.rows(), Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(toplateImage, onFrame2);
@@ -442,19 +453,12 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
             byte[] bImage = baos.toByteArray();
             onFrame2_base64 = Base64.encodeToString(bImage, 0);
 
-            clovaTask.start();
-            mOpenCvCameraView.disableView();
-
-//            isCameraViewEnabled = !isCameraViewEnabled;
-//            Log.e("onclick:: ", String.valueOf(isCameraViewEnabled));
-//            mOpenCvCameraView.disableView();
+            clovaTask.restartClovaThread();
+            clovaTask.stopPlateThread();
+            clovaFlag = true;
 
         }
-
-        return matInput;
     }
-
-
 
     private void carPlate_num (String onFrame2_base64) {
         if (!(onFrame2_base64.equals(before_image))) {
@@ -492,13 +496,9 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
                     if (response.isSuccessful()) {
                         Log.e("json 파일", String.valueOf(cFlag)+2);
                         JsonObject result = response.body();
-                        //Log.e("json 파일", String.valueOf(result));
                         JsonArray imagesArr = result.getAsJsonArray("images");
-                        //Log.e("json 파일", String.valueOf(imagesArr));
                         JsonObject firstImageObj = (JsonObject) imagesArr.get(0);
-                        //Log.e("json 파일", String.valueOf(firstImageObj));
                         JsonArray fieldsArr = firstImageObj.getAsJsonArray("fields");
-                        //Log.e("json 파일", String.valueOf(fieldsArr));
                         String front = "", middle = "", back = "", tmp = "";
                         for (int i=0; i<fieldsArr.size(); i++){
                             JsonObject job = (JsonObject) fieldsArr.get(i);
@@ -509,9 +509,6 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
                             else {
                                 strs = strs + tmp;
                             }
-                            //Log.e("json 파일", String.valueOf(job));
-//                            strs = strs + job.get("inferText");
-                            //.e("json 파일", String.valueOf(job.get("inferText")));
                         }
 
                         if (strs.length() == 0) {
@@ -521,21 +518,19 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
                             if (middle.length() != 0) strs = strs + middle;
                             if (back.length() != 0) strs = strs + back;
                         }
-                        //Log.e("json 파일", strs);
 
                         String carPlate_num = strs.replaceAll("[^ㄱ-ㅎㅏ-ㅣ가-힣0-9]", "");
                         // 탐지한 번호판 입력
                         carNumber.setText(carPlate_num);
-                        //Toast.makeText(getApplicationContext(), strs, Toast.LENGTH_LONG).show();
-                        //Toast.makeText(getApplicationContext(), carPlate_num, Toast.LENGTH_LONG).show();
                         Log.e("텍스트 인식", "성공");
                         cFlag = true;
-                        clovaTask.stopThread();
+                        clovaTask.stopClovaThread();
 
 
                     } else {
                         Log.e("텍스트 인식", "실패");
-                        cFlag = false;
+                        cFlag = true;
+                        clovaTask.stopClovaThread();
                     }
                     Log.e("json 파일", String.valueOf(cFlag)+3);
                 }
@@ -796,25 +791,24 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
             case R.id.gps:
                 keyBoardHidden();
                 getGps();
-//                lat.setText("128");
-//                lng.setText("35");
-//                gpsFlag = true;
                 break;
             case R.id.register:
                 getGps();
 
                 if (GetInputCheck()) {
-//                    Log.e("자료", "실행1");
                     loading.setVisibility(VISIBLE);
-//                    Log.e("자료", "실행2");
                     getInfo = new GetInfo("REGISTER");
-//                    Log.e("자료", "실행3");
                     getInfo.execute();
-//                    Log.e("자료", "실행4");
-//                    mOpenCvCameraView.enableView();
-//                    Log.e("자료", "실행5");
+                    sound.play(soundId, 1f, 1f, 0, 0, 1f);
                 }
-//                Log.e("자료", "실행6");
+
+                break;
+            case R.id.btnPlate:
+                if (clovaFlag) {
+                    clovaFlag = false;
+                } else {
+                    clovaFlag = true;
+                }
                 break;
             case R.id.btnMap:
                 Intent intent = new Intent(this, SurveyMap.class);
@@ -840,13 +834,17 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
 
     // 백그라운드 스레드 실행을 위한 클래스 정의
     class BackgroundTask extends Thread {
-        private volatile boolean isRunning = true;
+        private volatile boolean isClovaRun = true;
+        private volatile boolean isPlateRun = true;
 
         @Override
         public void run() {
-            while (isRunning) {
+            while (true) {
                 // 지속적으로 실행할 함수 호출
-                carPlate_num(onFrame2_base64);
+                if (isPlateRun)
+                    carPlate();
+                if (isClovaRun)
+                    carPlate_num(onFrame2_base64);
 
                 // 일시적인 딜레이 (1초로 설정)
                 try {
@@ -858,8 +856,18 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         }
 
         // 스레드를 중지하는 메소드
-        public void stopThread() {
-            isRunning = false;
+        public void stopClovaThread() {
+            isClovaRun = false;
+        }
+        public void restartClovaThread() {
+            isClovaRun = true;
+        }
+
+        public void stopPlateThread() {
+            isPlateRun = false;
+        }
+        public void restartPlateThread() {
+            isPlateRun = true;
         }
     }
 

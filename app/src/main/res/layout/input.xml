@@ -198,7 +198,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="15dp"
                     android:gravity="center">
 
                     <Button
@@ -210,7 +210,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="37dp"
                     android:layout_marginTop="10dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
@@ -249,7 +249,7 @@
                         <TextView
                             android:id="@+id/lng"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:gravity="center"
                             android:hint="@string/lng"
                             android:textColor="@color/white" />
@@ -264,15 +264,16 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="46dp"
                     android:gravity="center"
                     android:orientation="vertical">
 
                     <Button
                         android:id="@+id/register"
                         android:layout_width="300dp"
-                        android:layout_height="45dp"
-                        android:background="@drawable/register_btn" />
+                        android:layout_height="34dp"
+                        android:background="@drawable/register_btn"
+                        android:textColor="#1487FE" />
                 </LinearLayout>
 
                 <!--                <LinearLayout-->
@@ -345,10 +346,23 @@
         <org.opencv.android.JavaCameraView
             android:id="@+id/activity_surface_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="357dp"
             android:layout_alignParentLeft="true"
             android:visibility="visible"
             opencv:camera_id="any" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnPlate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="번호판 인식" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

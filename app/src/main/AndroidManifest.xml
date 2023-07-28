@@ -35,11 +35,11 @@
             </intent-filter>
         </activity>
 
-<!--        <activity
-            android:name="parkingsurvey.neotsys.com.InputActivity"
-            android:Orientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />-->
+        <!--        <activity
+                    android:name="parkingsurvey.neotsys.com.InputActivity"
+                    android:Orientation="portrait"
+                    android:windowSoftInputMode="stateAlwaysHidden"
+                    android:theme="@style/Theme.AppCompat.NoActionBar" />-->
 
         <activity android:name="parkingsurvey.neotsys.com.InputActivity"
             android:screenOrientation="landscape"
