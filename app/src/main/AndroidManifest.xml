@@ -27,6 +27,25 @@
             android:value="0eb35613ae427d017a0707df53324d76"/>
 
         <activity android:name="parkingsurvey.neotsys.com.MainActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+<!--        <activity
+            android:name="parkingsurvey.neotsys.com.InputActivity"
+            android:Orientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />-->
+
+        <activity android:name="parkingsurvey.neotsys.com.InputActivity"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -35,25 +54,8 @@
         </activity>
 
         <activity
-            android:name="parkingsurvey.neotsys.com.InputActivity"
-            android:Orientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
-<!--        <activity android:name="parkingsurvey.neotsys.com.InputActivity"-->
-<!--            android:windowSoftInputMode="stateAlwaysHidden"-->
-<!--            android:theme="@style/Theme.AppCompat.NoActionBar"-->
-<!--            android:configChanges="keyboardHidden|orientation">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN"/>-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
-
-        <activity
             android:name="parkingsurvey.neotsys.com.SurveyMap"
-            android:screenOrientation="portrait"
+            android:screenOrientation="landscape"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 

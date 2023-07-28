@@ -164,7 +164,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
     public interface OCRService {
         @Headers({
                 "Content-Type: application/json; charset=utf-8",
-                "X-OCR-SECRET: QmlsQVJod3l1RlBEeWtoRmNFQnBXeHNYd2hBalVCYWQ="
+                "X-OCR-SECRET: TVhpZEFOc1RNcmxWVUtQa3ZCQnpPeUtLQWNwalR0WXI="
         })
         @POST("general")
         Call<JsonObject> doOCR(@Body JsonObject requestBody);
@@ -214,7 +214,7 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.input);
 
         // Set the orientation to portrait mode programmatically
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
 
         // javacamera
@@ -360,8 +360,8 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         float[][] proposal = detectionModel.getProposal(onFrame, input);
         //long yolo_e = System.currentTimeMillis();
         //inferenceTime[0] = yolo_e-yolo_s;
-        //Imgproc.rectangle(matInput, new Point(0, 0), new Point(400, 300),new Scalar(0, 255, 0), 10);
-        Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+250, mOpenCvCameraView.getTop()-850), new Point(mOpenCvCameraView.getRight()-550, mOpenCvCameraView.getBottom()-1200),new Scalar(0, 255, 0), 10);
+        Imgproc.rectangle(matInput, new Point(100, 200), new Point(800, 500),new Scalar(0, 255, 0), 10);
+        //Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+250, mOpenCvCameraView.getTop()-850), new Point(mOpenCvCameraView.getRight()-550, mOpenCvCameraView.getBottom()-1200),new Scalar(0, 255, 0), 10);
         //Imgproc.rectangle(matInput, new Point(mOpenCvCameraView.getLeft()+750, mOpenCvCameraView.getTop()+230), new Point(mOpenCvCameraView.getRight()+200, mOpenCvCameraView.getBottom()+200),new Scalar(0, 255, 0), 10);
 //        Log.d("log:: ", "before");
 //        Log.d("log:: ", "point 1 " + mOpenCvCameraView.getLeft() + " , " + mOpenCvCameraView.getTop());
@@ -411,7 +411,8 @@ public class InputActivity extends AppCompatActivity implements View.OnClickList
         Imgproc.rectangle(matInput, new Point(pt1_x, pt1_y), new Point(pt3_x, pt3_y),
                 new Scalar(0, 0, 255), 10);
 
-        if (((pt1_x < mOpenCvCameraView.getLeft()+250) || ((pt1_x + new_w) > mOpenCvCameraView.getRight()-550)) || ((pt1_y < mOpenCvCameraView.getTop()-850) || ((pt1_y + new_h) > mOpenCvCameraView.getBottom()-1200)) || (new_w < 50)) {
+        //if(false){
+        if (((pt1_x < 100) || ((pt1_x + new_w) > 800)) || ((pt1_y < 200) || ((pt1_y + new_h) > 500)) || (new_w < 50)) {
             Log.d("log:: ", "Out of Bound");
         } else {
             Imgproc.rectangle(matInput, new Point(pt1_x, pt1_y), new Point(pt3_x, pt3_y),

@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/input_bg"
-    android:orientation="vertical"
-    tools:context="parkingsurvey.neotsys.com.MainActivity"
-    android:id="@+id/fl">
+    tools:context="parkingsurvey.neotsys.com.MainActivity">
 
     <FrameLayout
-        android:layout_width="match_parent"
+        android:layout_width="354dp"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="353dp"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
@@ -26,17 +24,17 @@
 
                 <include
                     android:id="@+id/include_btnOpen"
+                    layout="@layout/title"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    layout="@layout/title"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:padding="20dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -49,7 +47,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/searchname"
-                        android:textColor="@color/white"/>
+                        android:textColor="@color/white" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -63,14 +61,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textColor="@color/white"/>
+                            android:textColor="@color/white" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginTop="2dp"
-                            android:background="@color/white">
-                        </LinearLayout>
+                            android:background="@color/white"></LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -86,32 +83,32 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/model"
-                        android:textColor="@color/white"/>
+                        android:textColor="@color/white" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
+                        android:background="@drawable/white_line"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:background="@drawable/white_line">
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp">
 
                         <Button
                             android:id="@+id/modelName"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:textColor="@color/white"
-                            android:background="@color/transparent"/>
+                            android:background="@color/transparent"
+                            android:textColor="@color/white" />
 
                         <Button
                             android:id="@+id/model"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_weight="0"
-                            android:background="@drawable/down"/>
+                            android:background="@drawable/down" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -128,32 +125,32 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/legal"
-                        android:textColor="@color/white"/>
+                        android:textColor="@color/white" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
+                        android:background="@drawable/white_line"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:background="@drawable/white_line">
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp">
 
                         <Button
                             android:id="@+id/legalName"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:textColor="@color/white"
-                            android:background="@color/transparent"/>
+                            android:background="@color/transparent"
+                            android:textColor="@color/white" />
 
                         <Button
                             android:id="@+id/legal"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_weight="0"
-                            android:background="@drawable/down"/>
+                            android:background="@drawable/down" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -170,7 +167,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/number"
-                        android:textColor="@color/white"/>
+                        android:textColor="@color/white" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -183,18 +180,17 @@
                             android:id="@+id/carNumber"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:textColor="@color/white"
                             android:background="@color/transparent"
+                            android:gravity="center"
                             android:imeOptions="actionDone"
-                            android:inputType="text"/>
+                            android:inputType="text"
+                            android:textColor="@color/white" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginTop="2dp"
-                            android:background="@color/white">
-                        </LinearLayout>
+                            android:background="@color/white"></LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -209,7 +205,7 @@
                         android:id="@+id/gps"
                         android:layout_width="150dp"
                         android:layout_height="29dp"
-                        android:background="@drawable/gps_btn"/>
+                        android:background="@drawable/gps_btn" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -222,8 +218,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginRight="10dp"
+                        android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:orientation="vertical">
 
@@ -233,21 +229,20 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:hint="@string/lat"
-                            android:textColor="@color/white"/>
+                            android:textColor="@color/white" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginTop="2dp"
-                            android:background="@color/white">
-                        </LinearLayout>
+                            android:background="@color/white"></LinearLayout>
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:orientation="vertical">
 
@@ -257,14 +252,13 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:hint="@string/lng"
-                            android:textColor="@color/white"/>
+                            android:textColor="@color/white" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginTop="2dp"
-                            android:background="@color/white">
-                        </LinearLayout>
+                            android:background="@color/white"></LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -278,32 +272,23 @@
                         android:id="@+id/register"
                         android:layout_width="300dp"
                         android:layout_height="45dp"
-                        android:background="@drawable/register_btn"/>
+                        android:background="@drawable/register_btn" />
                 </LinearLayout>
 
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="250dp"-->
-<!--                    android:gravity="center"-->
-<!--                    android:orientation="vertical">-->
+                <!--                <LinearLayout-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="250dp"-->
+                <!--                    android:gravity="center"-->
+                <!--                    android:orientation="vertical">-->
 
-<!--                    <org.opencv.android.JavaCameraView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="230dp"-->
-<!--                        opencv:camera_id="any"-->
-<!--                        android:visibility="gone"-->
-<!--                        android:id="@+id/activity_surface_view" />-->
+                <!--                    <org.opencv.android.JavaCameraView-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="230dp"-->
+                <!--                        opencv:camera_id="any"-->
+                <!--                        android:visibility="gone"-->
+                <!--                        android:id="@+id/activity_surface_view" />-->
 
-<!--                </LinearLayout>-->
-
-                <org.opencv.android.JavaCameraView
-                    android:id="@+id/activity_surface_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="230dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="4dp"
-                    android:visibility="visible"
-                    opencv:camera_id="any" />
+                <!--                </LinearLayout>-->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -316,7 +301,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/check"
-                        android:textColor="@color/white"/>
+                        android:textColor="@color/white" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -330,14 +315,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textColor="@color/white"/>
+                            android:textColor="@color/white" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginTop="2dp"
-                            android:background="@color/white">
-                        </LinearLayout>
+                            android:background="@color/white"></LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -349,6 +333,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="70dp"/>
+            android:layout_marginTop="70dp" />
+
     </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="382dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <org.opencv.android.JavaCameraView
+            android:id="@+id/activity_surface_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:visibility="visible"
+            opencv:camera_id="any" />
+    </LinearLayout>
+
 </LinearLayout>
